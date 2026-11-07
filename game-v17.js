@@ -269,7 +269,8 @@ function draw(){
   if(img&&img.complete&&img.naturalWidth){
     const targetH=116,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
     ctx.save();
-    ctx.translate(player.x,player.y-targetH);
+    const groundY=player.y+32;
+    ctx.translate(player.x,groundY-targetH);
     if(player.facing==='left')ctx.scale(-1,1);
     ctx.globalAlpha=player.hitCooldown>0?0.55:1;
     ctx.drawImage(img,-targetW/2,0,targetW,targetH);
@@ -298,16 +299,17 @@ function draw(){
     if(b&&b.complete&&b.naturalWidth){
       const targetH=96,ratio=b.naturalWidth/b.naturalHeight,targetW=targetH*ratio;
       ctx.save();
-      ctx.translate(activeBoar.x,activeBoar.y-targetH);
+      const groundY=activeBoar.y+32;
+      ctx.translate(activeBoar.x,groundY-targetH);
       if(activeBoar.x>player.x)ctx.scale(-1,1);
       ctx.drawImage(b,-targetW/2,0,targetW,targetH);
       ctx.restore();
       ctx.fillStyle='rgba(0,0,0,.7)';
-      ctx.fillRect(activeBoar.x-42,activeBoar.y-108,84,8);
+      ctx.fillRect(activeBoar.x-42,activeBoar.y-108+32,84,8);
       ctx.fillStyle='#c93b3b';
-      ctx.fillRect(activeBoar.x-42,activeBoar.y-108,84*(activeBoar.hp/activeBoar.maxHp),8);
+      ctx.fillRect(activeBoar.x-42,activeBoar.y-108+32,84*(activeBoar.hp/activeBoar.maxHp),8);
       ctx.strokeStyle='#fff';
-      ctx.strokeRect(activeBoar.x-42,activeBoar.y-108,84,8);
+      ctx.strokeRect(activeBoar.x-42,activeBoar.y-108+32,84,8);
     }
   }
 
