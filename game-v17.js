@@ -35,16 +35,16 @@ const WALK_FRAMES=[
   'assets/characters/kala/walk/KALA_walk_12.png'
 ];
 const BOAR_FRAMES=[
-  'assets/enemies/wild-boar/WILD_BOAR_01.png',
-  'assets/enemies/wild-boar/WILD_BOAR_02.png',
-  'assets/enemies/wild-boar/WILD_BOAR_03.png',
-  'assets/enemies/wild-boar/WILD_BOAR_04.png',
-  'assets/enemies/wild-boar/WILD_BOAR_05.png',
-  'assets/enemies/wild-boar/WILD_BOAR_06.png',
-  'assets/enemies/wild-boar/WILD_BOAR_07.png',
-  'assets/enemies/wild-boar/WILD_BOAR_08.png',
-  'assets/enemies/wild-boar/WILD_BOAR_09.png',
-  'assets/enemies/wild-boar/WILD_BOAR_10.png'
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_01.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_02.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_03.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_04.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_05.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_06.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_07.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_08.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_09.png',
+  'assets/enemies/wild-boar/WILD_BOAR_ATTACK_10.png'
 ];
 
 const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right',hp:3,hitCooldown:0};
