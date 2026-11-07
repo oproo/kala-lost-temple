@@ -24,19 +24,21 @@ const WALK_FRAMES=[
 ];
 
 const player={x:160,y:0,speed:260,attack:0,dash:0,facing:'right'};
+let assetsReady=false;
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now();
 let animTime=0;
 
 const idleImages=IDLE_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
+[...idleImages,...walkImages].forEach(img=>img.addEventListener('load',()=>{assetsReady=true}));
 
 function resize(){
   dpr=Math.min(window.devicePixelRatio||1,2);
   W=window.innerWidth; H=window.innerHeight;
   canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  player.y=H-120;
+  player.y=Math.max(140,H-120);
   player.x=Math.max(40,Math.min(W-40,player.x));
 }
 function setHeld(el,key){
@@ -104,10 +106,16 @@ function draw(){
     ctx.drawImage(img,-targetW/2,0,targetW,targetH);
     ctx.restore();
   }else{
+    // Keep KĀLA visibly on-screen while image assets finish loading.
+    ctx.save();
+    ctx.translate(player.x,player.y-64);
+    if(player.facing==='left') ctx.scale(-1,1);
     ctx.fillStyle='#d8a33b';
     ctx.beginPath();
-    ctx.arc(player.x,player.y,22,0,Math.PI*2);
+    ctx.arc(0,18,18,0,Math.PI*2);
     ctx.fill();
+    ctx.fillRect(-14,38,28,28);
+    ctx.restore();
   }
 
   if(player.attack>0){
