@@ -23,7 +23,7 @@ const WALK_FRAMES=[
   'assets/characters/kala/walk/KALA_walk_12.png'
 ];
 
-const player={x:160,y:0,speed:260,attack:0,dash:0,facingLeft:false};
+const player={x:160,y:0,speed:260,attack:0,dash:0,facing:'right'};
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now();
 let animTime=0;
@@ -37,6 +37,7 @@ function resize(){
   canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   player.y=H-120;
+  player.x=Math.max(40,Math.min(W-40,player.x));
 }
 function setHeld(el,key){
   const on=e=>{e.preventDefault();keys[key]=true};
@@ -49,22 +50,38 @@ setHeld(document.getElementById('rightBtn'),'right');
 document.getElementById('attackBtn').addEventListener('pointerdown',e=>{e.preventDefault();player.attack=.18});
 document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventDefault();player.dash=.22});
 document.getElementById('interactBtn').addEventListener('pointerdown',e=>{e.preventDefault();document.getElementById('message').textContent='Interact button works'});
-window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;if(e.key==='ArrowRight'||e.key==='d')keys.right=true;if(e.code==='Space')player.attack=.18;if(e.key==='Shift')player.dash=.22});
-window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;if(e.key==='ArrowRight'||e.key==='d')keys.right=false});
+
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){keys.left=true;player.facing='left'}
+  if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){keys.right=true;player.facing='right'}
+  if(e.code==='Space')player.attack=.18;
+  if(e.key==='Shift')player.dash=.22
+});
+window.addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;
+  if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false
+});
 window.addEventListener('resize',resize);
 
 function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
   const speed=player.dash>0?620:player.speed;
-  if(dir<0) player.facingLeft=true;\n  if(dir>0) player.facingLeft=false;\n  player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
+  player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
   player.attack=Math.max(0,player.attack-dt);
   player.dash=Math.max(0,player.dash-dt);
   animTime+=dt;
 }
+
 function draw(){
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#07110b';ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(0,player.y+32);ctx.lineTo(W,player.y+32);ctx.stroke();
+  ctx.fillStyle='#07110b';
+  ctx.fillRect(0,0,W,H);
+
+  ctx.strokeStyle='rgba(255,255,255,.12)';
+  ctx.beginPath();
+  ctx.moveTo(0,player.y+32);
+  ctx.lineTo(W,player.y+32);
+  ctx.stroke();
 
   const moving=keys.left||keys.right;
   const frames=moving?walkImages:idleImages;
@@ -76,16 +93,31 @@ function draw(){
     const targetH=116;
     const ratio=img.naturalWidth/img.naturalHeight;
     const targetW=targetH*ratio;
+
     ctx.save();
-    ctx.translate(player.x, player.y - targetH);
-    if(player.facingLeft) ctx.scale(-1, 1);
-    ctx.drawImage(img, -targetW/2, 0, targetW, targetH);
+    ctx.translate(player.x,player.y-targetH);
+
+    if(player.facing==='left'){
+      ctx.scale(-1,1);
+    }
+
+    ctx.drawImage(img,-targetW/2,0,targetW,targetH);
     ctx.restore();
   }else{
-    ctx.fillStyle='#d8a33b';ctx.beginPath();ctx.arc(player.x,player.y,22,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#d8a33b';
+    ctx.beginPath();
+    ctx.arc(player.x,player.y,22,0,Math.PI*2);
+    ctx.fill();
   }
 
-  if(player.attack>0){ctx.strokeStyle='#f4d27a';ctx.lineWidth=7;ctx.beginPath();ctx.arc(player.x+28,player.y,28,-.8,.8);ctx.stroke()}
+  if(player.attack>0){
+    ctx.strokeStyle='#f4d27a';
+    ctx.lineWidth=7;
+    ctx.beginPath();
+    ctx.arc(player.x+28,player.y,28,-.8,.8);
+    ctx.stroke();
+  }
 }
+
 function loop(now){const dt=Math.min((now-last)/1000,.033);last=now;update(dt);draw();requestAnimationFrame(loop)}
 resize();requestAnimationFrame(loop);
