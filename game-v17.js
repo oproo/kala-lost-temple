@@ -61,7 +61,15 @@ const idleImages=IDLE_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const attackImages=ATTACK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const boarImages=BOAR_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
-[...idleImages,...walkImages,...attackImages,...boarImages].forEach(img=>img.addEventListener('load',()=>{}));
+const BLUE_RELIC_FRAMES=[
+  'assets/relics/blue/blue_relic_spin_01.png',
+  'assets/relics/blue/blue_relic_spin_02.png',
+  'assets/relics/blue/blue_relic_spin_03.png',
+  'assets/relics/blue/blue_relic_spin_04.png',
+  'assets/relics/blue/blue_relic_spin_05.png'
+];
+const blueRelicImages=BLUE_RELIC_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
+[...idleImages,...walkImages,...attackImages,...boarImages,...blueRelicImages].forEach(img=>img.addEventListener('load',()=>{}));
 
 function resize(){
   dpr=Math.min(window.devicePixelRatio||1,2);
@@ -240,6 +248,8 @@ function draw(){
   ctx.fillStyle='#07110b';
   ctx.fillRect(0,0,W,H);
 
+  relics.forEach(r=>{r.y=player.y;});
+
   ctx.strokeStyle='rgba(255,255,255,.12)';
   ctx.beginPath();
   ctx.moveTo(0,player.y+32);ctx.lineTo(W,player.y+32);ctx.stroke();
@@ -265,6 +275,35 @@ function draw(){
     ctx.drawImage(img,-targetW/2,0,targetW,targetH);
     ctx.restore();
   }
+
+  // Sacred relics
+  relics.forEach((r,index)=>{
+    if(r.collected)return;
+    const isBlue=index===2;
+    if(isBlue){
+      const img=blueRelicImages[Math.floor(animTime*7)%blueRelicImages.length];
+      if(img&&img.complete&&img.naturalWidth){
+        const targetH=62,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
+        ctx.save();
+        ctx.globalAlpha=.96;
+        ctx.translate(r.x,r.y-58);
+        ctx.shadowColor='rgba(40,140,255,.85)';
+        ctx.shadowBlur=18;
+        ctx.drawImage(img,-targetW/2,0,targetW,targetH);
+        ctx.restore();
+      }
+    }else{
+      const pulse=1+Math.sin(animTime*4+index)*.08;
+      ctx.save();
+      ctx.translate(r.x,r.y-38);
+      ctx.scale(pulse,pulse);
+      ctx.shadowColor='rgba(255,215,90,.8)';
+      ctx.shadowBlur=18;
+      ctx.fillStyle='rgba(255,210,80,.9)';
+      ctx.beginPath();ctx.moveTo(0,-24);ctx.lineTo(18,0);ctx.lineTo(0,24);ctx.lineTo(-18,0);ctx.closePath();ctx.fill();
+      ctx.restore();
+    }
+  });
 
   const activeBoar=boars[currentBoar];
   if(activeBoar&&activeBoar.active&&!giantBoar.active){
