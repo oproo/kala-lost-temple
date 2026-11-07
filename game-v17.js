@@ -76,7 +76,7 @@ function resize(){
   W=window.innerWidth; H=window.innerHeight;
   canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  player.y=Math.max(140,H-120);
+  player.y=Math.max(140,H-120)+20;
   player.x=Math.max(40,Math.min(W-40,player.x));
   relics[0].x=Math.max(120,W*.25);
   relics[1].x=Math.max(240,W*.5);
