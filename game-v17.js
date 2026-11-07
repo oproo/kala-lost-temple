@@ -284,7 +284,7 @@ function draw(){
   if(img&&img.complete&&img.naturalWidth){
     const targetH=116,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
     ctx.save();
-    const groundY=player.y+32-player.jumpY;
+    const groundY=player.y+32+player.jumpY;
     ctx.translate(player.x,groundY-targetH);
     if(player.facing==='left')ctx.scale(-1,1);
     ctx.globalAlpha=player.hitCooldown>0?0.55:1;
