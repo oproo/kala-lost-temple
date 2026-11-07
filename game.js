@@ -23,7 +23,7 @@ const WALK_FRAMES=[
   'assets/characters/kala/walk/KALA_walk_12.png'
 ];
 
-const player={x:160,y:0,speed:260,attack:0,dash:0};
+const player={x:160,y:0,speed:260,attack:0,dash:0,facingLeft:false};
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now();
 let animTime=0;
@@ -56,7 +56,7 @@ window.addEventListener('resize',resize);
 function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
   const speed=player.dash>0?620:player.speed;
-  player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
+  if(dir<0) player.facingLeft=true;\n  if(dir>0) player.facingLeft=false;\n  player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
   player.attack=Math.max(0,player.attack-dt);
   player.dash=Math.max(0,player.dash-dt);
   animTime+=dt;
@@ -77,7 +77,7 @@ function draw(){
     const ratio=img.naturalWidth/img.naturalHeight;
     const targetW=targetH*ratio;
     ctx.save();
-    if(keys.left){ctx.translate(player.x+targetW/2,0);ctx.scale(-1,1);ctx.drawImage(img,-targetW/2,player.y-targetH,targetW,targetH)}
+    if(player.facingLeft){ctx.translate(player.x+targetW/2,0);ctx.scale(-1,1);ctx.drawImage(img,-targetW/2,player.y-targetH,targetW,targetH)}
     else ctx.drawImage(img,player.x-targetW/2,player.y-targetH,targetW,targetH);
     ctx.restore();
   }else{
