@@ -42,8 +42,21 @@ function resize(){
   player.x=Math.max(40,Math.min(W-40,player.x));
 }
 function setHeld(el,key){
-  const on=e=>{e.preventDefault();keys[key]=true};
-  const off=e=>{e.preventDefault();keys[key]=false};
+  const on=e=>{
+    e.preventDefault();
+    keys[key]=true;
+
+    // Touch controls must update the facing direction too.
+    // Keyboard input already does this in the keydown handler.
+    if(key==='left') player.facing='left';
+    if(key==='right') player.facing='right';
+  };
+
+  const off=e=>{
+    e.preventDefault();
+    keys[key]=false;
+  };
+
   ['pointerdown','touchstart'].forEach(t=>el.addEventListener(t,on,{passive:false}));
   ['pointerup','pointercancel','pointerleave','touchend'].forEach(t=>el.addEventListener(t,off,{passive:false}));
 }
