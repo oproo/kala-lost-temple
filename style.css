@@ -1,1 +1,12 @@
-*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#111}body{font-family:Arial,sans-serif}#game{display:block;width:100vw;height:100vh;background:#111}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#111}
+body{font-family:Arial,sans-serif}
+#gameShell{position:fixed;inset:0;width:100vw;height:100dvh;overflow:hidden}
+#game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#111;touch-action:none}
+#controls{position:absolute;inset:0;z-index:5;pointer-events:none}
+button{font:700 22px Arial;color:#fff;background:rgba(20,20,20,.72);border:2px solid rgba(255,255,255,.65);border-radius:16px;width:64px;height:64px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto}
+button:active{transform:scale(.94);background:rgba(120,90,30,.9)}
+.movePad{position:absolute;left:18px;bottom:max(18px,env(safe-area-inset-bottom));display:flex;gap:12px}
+.actionPad{position:absolute;right:18px;bottom:max(18px,env(safe-area-inset-bottom));display:flex;gap:12px}
+#message{position:absolute;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:6;color:#fff;background:rgba(0,0,0,.55);padding:8px 14px;border-radius:10px;font-size:14px;pointer-events:none;white-space:nowrap}
+@media(max-width:700px){button{width:58px;height:58px;font-size:20px}.movePad{left:12px}.actionPad{right:12px}}
