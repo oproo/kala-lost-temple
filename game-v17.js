@@ -276,31 +276,18 @@ function draw(){
     ctx.restore();
   }
 
-  // Sacred relics
-  relics.forEach((r,index)=>{
+  // Sacred relics: use the blue relic animation for all three collectibles.
+  relics.forEach((r)=>{
     if(r.collected)return;
-    const isBlue=index===2;
-    if(isBlue){
-      const img=blueRelicImages[Math.floor(animTime*7)%blueRelicImages.length];
-      if(img&&img.complete&&img.naturalWidth){
-        const targetH=62,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
-        ctx.save();
-        ctx.globalAlpha=.96;
-        ctx.translate(r.x,r.y-58);
-        ctx.shadowColor='rgba(40,140,255,.85)';
-        ctx.shadowBlur=18;
-        ctx.drawImage(img,-targetW/2,0,targetW,targetH);
-        ctx.restore();
-      }
-    }else{
-      const pulse=1+Math.sin(animTime*4+index)*.08;
+    const img=blueRelicImages[Math.floor(animTime*7)%blueRelicImages.length];
+    if(img&&img.complete&&img.naturalWidth){
+      const targetH=31,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
       ctx.save();
-      ctx.translate(r.x,r.y-38);
-      ctx.scale(pulse,pulse);
-      ctx.shadowColor='rgba(255,215,90,.8)';
-      ctx.shadowBlur=18;
-      ctx.fillStyle='rgba(255,210,80,.9)';
-      ctx.beginPath();ctx.moveTo(0,-24);ctx.lineTo(18,0);ctx.lineTo(0,24);ctx.lineTo(-18,0);ctx.closePath();ctx.fill();
+      ctx.globalAlpha=.96;
+      ctx.translate(r.x,r.y-31);
+      ctx.shadowColor='rgba(40,140,255,.85)';
+      ctx.shadowBlur=10;
+      ctx.drawImage(img,-targetW/2,0,targetW,targetH);
       ctx.restore();
     }
   });
