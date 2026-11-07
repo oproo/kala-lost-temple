@@ -47,7 +47,7 @@ const BOAR_FRAMES=[
   'assets/enemies/wild-boar/WILD_BOAR_ATTACK_10.png'
 ];
 
-const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right',hp:3,hitCooldown:0};
+const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right',hp:3,hitCooldown:0,jumpY:0,vy:0,onGround:true};
 const boars=Array.from({length:5},(_,i)=>({x:0,y:0,speed:105+i*8,animTime:0,attackCooldown:0,maxHp:3+i,hp:3+i,active:false,index:i}));
 let currentBoar=0;
 const relics=[{x:120,collected:false},{x:300,collected:false},{x:480,collected:false}];
@@ -112,6 +112,13 @@ function setHeld(el,key){
 setHeld(document.getElementById('leftBtn'),'left');
 setHeld(document.getElementById('rightBtn'),'right');
 
+function jump(){
+  if(player.onGround){
+    player.vy=-560;
+    player.onGround=false;
+  }
+}
+
 function triggerAttack(e){
   if(e)e.preventDefault();
   if(player.attack<=0){
@@ -120,6 +127,7 @@ function triggerAttack(e){
   }
 }
 document.getElementById('attackBtn').addEventListener('pointerdown',triggerAttack);
+document.getElementById('jumpBtn').addEventListener('pointerdown',e=>{e.preventDefault();jump()});
 document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventDefault();player.dash=.22});
 function tryAwaken(){
   if(canAwaken()){
@@ -136,6 +144,7 @@ document.getElementById('interactBtn').addEventListener('pointerdown',e=>{e.prev
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){keys.left=true;player.facing='left'}
   if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){keys.right=true;player.facing='right'}
+  if((e.key==='ArrowUp'||e.key.toLowerCase()==='w')&&!e.repeat)jump();
   if(e.code==='Space'&&!e.repeat)triggerAttack(e);
   if(e.key==='Shift')player.dash=.22;
   if(e.key.toLowerCase()==='e')tryAwaken();
@@ -180,6 +189,12 @@ function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
   const speed=player.dash>0?620:player.speed;
   player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
+
+  if(!player.onGround){
+    player.vy+=1450*dt;
+    player.jumpY+=player.vy*dt;
+    if(player.jumpY>=0){player.jumpY=0;player.vy=0;player.onGround=true;}
+  }
 
   if(player.attack>0){
     player.attack=Math.max(0,player.attack-dt);
@@ -269,7 +284,7 @@ function draw(){
   if(img&&img.complete&&img.naturalWidth){
     const targetH=116,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
     ctx.save();
-    const groundY=player.y+32;
+    const groundY=player.y+32-player.jumpY;
     ctx.translate(player.x,groundY-targetH);
     if(player.facing==='left')ctx.scale(-1,1);
     ctx.globalAlpha=player.hitCooldown>0?0.55:1;
