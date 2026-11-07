@@ -109,7 +109,7 @@ function draw(){
     // Keep KĀLA visibly on-screen while image assets finish loading.
     ctx.save();
     ctx.translate(player.x,player.y-64);
-    if(player.facing==='left') ctx.scale(-1,1);
+    if(player.facing==='right') ctx.scale(-1,1);
     ctx.fillStyle='#d8a33b';
     ctx.beginPath();
     ctx.arc(0,18,18,0,Math.PI*2);
