@@ -47,7 +47,7 @@ const BOAR_FRAMES=[
   'assets/enemies/wild-boar/WILD_BOAR_ATTACK_10.png'
 ];
 
-const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right',hp:3,hitCooldown:0,jumpY:0,vy:0,onGround:true};
+const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right',hp:3,hitCooldown:0,jumpY:0,vy:0,onGround:true,jumpPhase:'ground',jumpTimer:0,airTime:0};
 const boars=Array.from({length:5},(_,i)=>({x:0,y:0,speed:105+i*8,animTime:0,attackCooldown:0,maxHp:3+i,hp:3+i,active:false,index:i}));
 let currentBoar=0;
 const relics=[{x:120,collected:false},{x:300,collected:false},{x:480,collected:false}];
@@ -114,7 +114,9 @@ setHeld(document.getElementById('rightBtn'),'right');
 
 function jump(){
   if(player.onGround){
-    player.vy=-560;
+    player.jumpPhase='crouch';
+    player.jumpTimer=0;
+    player.vy=0;
     player.onGround=false;
   }
 }
@@ -190,10 +192,23 @@ function update(dt){
   const speed=player.dash>0?620:player.speed;
   player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
 
-  if(!player.onGround){
+  if(player.jumpPhase==='crouch'){
+    player.jumpTimer+=dt;
+    if(player.jumpTimer>=0.11){
+      player.jumpPhase='air';
+      player.airTime=0;
+      player.vy=-560;
+    }
+  }else if(!player.onGround){
+    player.airTime+=dt;
     player.vy+=1450*dt;
     player.jumpY+=player.vy*dt;
-    if(player.jumpY>=0){player.jumpY=0;player.vy=0;player.onGround=true;}
+    if(player.jumpY>=0){
+      player.jumpY=0;player.vy=0;player.onGround=true;player.jumpPhase='land';player.jumpTimer=0;
+    }
+  }else if(player.jumpPhase==='land'){
+    player.jumpTimer+=dt;
+    if(player.jumpTimer>=0.10)player.jumpPhase='ground';
   }
 
   if(player.attack>0){
@@ -284,8 +299,14 @@ function draw(){
   if(img&&img.complete&&img.naturalWidth){
     const targetH=116,ratio=img.naturalWidth/img.naturalHeight,targetW=targetH*ratio;
     ctx.save();
-    const groundY=player.y+32+player.jumpY;
+    const visualJump=player.jumpPhase==='crouch' ? 0 : player.jumpY;
+    const groundY=player.y+32+visualJump;
     ctx.translate(player.x,groundY-targetH);
+    let sx=1,sy=1;
+    if(player.jumpPhase==='crouch'){sx=1.06;sy=.88;ctx.translate(0,targetH*.12);}
+    else if(player.jumpPhase==='air'){const t=Math.min(1,Math.abs(player.vy)/560);sx=1-.08*t;sy=1+.08*t;}
+    else if(player.jumpPhase==='land'){sx=1.09;sy=.84;ctx.translate(0,targetH*.08);}
+    ctx.scale(sx,sy);
     if(player.facing==='left')ctx.scale(-1,1);
     ctx.globalAlpha=player.hitCooldown>0?0.55:1;
     ctx.drawImage(img,-targetW/2,0,targetW,targetH);
@@ -307,6 +328,26 @@ function draw(){
       ctx.restore();
     }
   });
+
+  // KĀLA's aerial energy trail, inspired by the reference image: restrained blue particles and motion streaks.
+  if(player.jumpPhase==='air'){
+    const intensity=Math.min(1,Math.abs(player.vy)/560);
+    ctx.save();
+    ctx.globalCompositeOperation='lighter';
+    for(let i=0;i<10;i++){
+      const phase=animTime*7+i*0.73;
+      const side=Math.sin(phase)*18;
+      const len=22+Math.abs(Math.cos(phase))*38*intensity;
+      const alpha=(0.10+0.10*Math.abs(Math.sin(phase)))*intensity;
+      ctx.strokeStyle=`rgba(55,150,255,${alpha})`;
+      ctx.lineWidth=1.5+intensity*1.5;
+      ctx.beginPath();
+      ctx.moveTo(player.x-22,player.y+2+side+player.jumpY);
+      ctx.lineTo(player.x-22-len,player.y+2+side+player.jumpY);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 
   const activeBoar=boars[currentBoar];
   if(activeBoar&&activeBoar.active&&!giantBoar.active){
