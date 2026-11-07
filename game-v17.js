@@ -350,26 +350,6 @@ function draw(){
     }
   });
 
-  // KĀLA's aerial energy trail, inspired by the reference image: restrained blue particles and motion streaks.
-  if(player.jumpPhase==='air'){
-    const intensity=Math.min(1,Math.abs(player.vy)/560);
-    ctx.save();
-    ctx.globalCompositeOperation='lighter';
-    for(let i=0;i<10;i++){
-      const phase=animTime*7+i*0.73;
-      const side=Math.sin(phase)*18;
-      const len=22+Math.abs(Math.cos(phase))*38*intensity;
-      const alpha=(0.10+0.10*Math.abs(Math.sin(phase)))*intensity;
-      ctx.strokeStyle=`rgba(55,150,255,${alpha})`;
-      ctx.lineWidth=1.5+intensity*1.5;
-      ctx.beginPath();
-      ctx.moveTo(player.x-22,player.y+2+side+player.jumpY);
-      ctx.lineTo(player.x-22-len,player.y+2+side+player.jumpY);
-      ctx.stroke();
-    }
-    ctx.restore();
-  }
-
   const activeBoar=boars[currentBoar];
   if(activeBoar&&activeBoar.active&&!giantBoar.active){
     const b=boarImages[Math.floor(activeBoar.animTime*10)%boarImages.length];
