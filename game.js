@@ -8,6 +8,18 @@ const IDLE_FRAMES=[
   'assets/characters/kala/idle/KALA_idle_04.png',
   'assets/characters/kala/idle/KALA_idle_05.png'
 ];
+const ATTACK_FRAMES=[
+  'assets/characters/kala/attack/KALA_attack_0.png',
+  'assets/characters/kala/attack/KALA_attack_1.png',
+  'assets/characters/kala/attack/KALA_attack_2.png',
+  'assets/characters/kala/attack/KALA_attack_3.png',
+  'assets/characters/kala/attack/KALA_attack_4.png',
+  'assets/characters/kala/attack/KALA_attack_5.png',
+  'assets/characters/kala/attack/KALA_attack_6.png',
+  'assets/characters/kala/attack/KALA_attack_7.png',
+  'assets/characters/kala/attack/KALA_attack_8.png',
+  'assets/characters/kala/attack/KALA_attack_9.png'
+];
 const WALK_FRAMES=[
   'assets/characters/kala/walk/KALA_walk_01.png',
   'assets/characters/kala/walk/KALA_walk_02.png',
@@ -23,15 +35,17 @@ const WALK_FRAMES=[
   'assets/characters/kala/walk/KALA_walk_12.png'
 ];
 
-const player={x:160,y:0,speed:260,attack:0,dash:0,facing:'right'};
+const player={x:160,y:0,speed:260,attack:0,attackTime:0,dash:0,facing:'right'};
 let assetsReady=false;
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now();
 let animTime=0;
+let attackTime=0;
 
 const idleImages=IDLE_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
-[...idleImages,...walkImages].forEach(img=>img.addEventListener('load',()=>{assetsReady=true}));
+const attackImages=ATTACK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
+[...idleImages,...walkImages,...attackImages].forEach(img=>img.addEventListener('load',()=>{assetsReady=true}));
 
 function resize(){
   dpr=Math.min(window.devicePixelRatio||1,2);
@@ -62,14 +76,21 @@ function setHeld(el,key){
 }
 setHeld(document.getElementById('leftBtn'),'left');
 setHeld(document.getElementById('rightBtn'),'right');
-document.getElementById('attackBtn').addEventListener('pointerdown',e=>{e.preventDefault();player.attack=.18});
+function triggerAttack(e){
+  if(e){e.preventDefault();}
+  if(player.attack<=0){
+    player.attack=0.9;
+    player.attackTime=0;
+  }
+}
+document.getElementById('attackBtn').addEventListener('pointerdown',triggerAttack);
 document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventDefault();player.dash=.22});
 document.getElementById('interactBtn').addEventListener('pointerdown',e=>{e.preventDefault();document.getElementById('message').textContent='Interact button works'});
 
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a'){keys.left=true;player.facing='left'}
   if(e.key==='ArrowRight'||e.key.toLowerCase()==='d'){keys.right=true;player.facing='right'}
-  if(e.code==='Space')player.attack=.18;
+  if(e.code==='Space')triggerAttack(e);
   if(e.key==='Shift')player.dash=.22
 });
 window.addEventListener('keyup',e=>{
@@ -82,7 +103,10 @@ function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
   const speed=player.dash>0?620:player.speed;
   player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
-  player.attack=Math.max(0,player.attack-dt);
+  if(player.attack>0){
+    player.attack=Math.max(0,player.attack-dt);
+    player.attackTime+=dt;
+  }
   player.dash=Math.max(0,player.dash-dt);
   animTime+=dt;
 }
@@ -98,13 +122,24 @@ function draw(){
   ctx.lineTo(W,player.y+32);
   ctx.stroke();
 
-  const moving=keys.left||keys.right;
-  const frames=moving?walkImages:idleImages;
-  const fps=moving?10:6;
-  const frame=Math.floor(animTime*fps)%frames.length;
+  let frames;
+  let fps;
+  let frame;
+
+  if(player.attack>0){
+    frames=attackImages;
+    fps=11;
+    frame=Math.min(frames.length-1,Math.floor(player.attackTime*fps));
+  }else{
+    const moving=keys.left||keys.right;
+    frames=moving?walkImages:idleImages;
+    fps=moving?10:6;
+    frame=Math.floor(animTime*fps)%frames.length;
+  }
+
   const img=frames[frame];
 
-  if(img.complete&&img.naturalWidth){
+  if(img&&img.complete&&img.naturalWidth){
     const targetH=116;
     const ratio=img.naturalWidth/img.naturalHeight;
     const targetW=targetH*ratio;
@@ -112,31 +147,22 @@ function draw(){
     ctx.save();
     ctx.translate(player.x,player.y-targetH);
 
-    if(player.facing==='left'){
-      ctx.scale(-1,1);
-    }
+    // Attack frames use the same facing system as idle/walk.
+    // Source artwork faces right, so only the left-facing state is mirrored.
+    if(player.facing==='left') ctx.scale(-1,1);
 
     ctx.drawImage(img,-targetW/2,0,targetW,targetH);
     ctx.restore();
   }else{
-    // Keep KĀLA visibly on-screen while image assets finish loading.
     ctx.save();
     ctx.translate(player.x,player.y-64);
-    if(player.facing==='right') ctx.scale(-1,1);
+    if(player.facing==='left') ctx.scale(-1,1);
     ctx.fillStyle='#d8a33b';
     ctx.beginPath();
     ctx.arc(0,18,18,0,Math.PI*2);
     ctx.fill();
     ctx.fillRect(-14,38,28,28);
     ctx.restore();
-  }
-
-  if(player.attack>0){
-    ctx.strokeStyle='#f4d27a';
-    ctx.lineWidth=7;
-    ctx.beginPath();
-    ctx.arc(player.x+28,player.y,28,-.8,.8);
-    ctx.stroke();
   }
 }
 
