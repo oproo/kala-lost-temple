@@ -77,8 +77,9 @@ function draw(){
     const ratio=img.naturalWidth/img.naturalHeight;
     const targetW=targetH*ratio;
     ctx.save();
-    if(player.facingLeft){ctx.translate(player.x+targetW/2,0);ctx.scale(-1,1);ctx.drawImage(img,-targetW/2,player.y-targetH,targetW,targetH)}
-    else ctx.drawImage(img,player.x-targetW/2,player.y-targetH,targetW,targetH);
+    ctx.translate(player.x, player.y - targetH);
+    if(player.facingLeft) ctx.scale(-1, 1);
+    ctx.drawImage(img, -targetW/2, 0, targetW, targetH);
     ctx.restore();
   }else{
     ctx.fillStyle='#d8a33b';ctx.beginPath();ctx.arc(player.x,player.y,22,0,Math.PI*2);ctx.fill();
