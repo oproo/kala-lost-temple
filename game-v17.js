@@ -100,6 +100,7 @@ const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const attackImages=ATTACK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const jumpImages=JUMP_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const boarImages=BOAR_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
+const giantBoarImages=GIANT_BOAR_RUN_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const GIANT_BOAR_RUN_FRAMES=[
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_01.png',
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_02.png',
@@ -300,73 +301,67 @@ function update(dt){
   if(player.jumpPhase==='crouch'){
     player.jumpTimer+=dt;
     if(player.jumpTimer>=0.11){
-      player.jumpPhase='air';
-      player.airTime=0;
-      player.vy=-560;
+      player.jumpPhase='air'; player.airTime=0; player.vy=-560;
     }
   }else if(!player.onGround){
-    player.airTime+=dt;
-    player.vy+=1450*dt;
-    player.jumpY+=player.vy*dt;
+    player.airTime+=dt; player.vy+=1450*dt; player.jumpY+=player.vy*dt;
     if(player.jumpY>=0){
-      player.jumpY=0;player.vy=0;player.onGround=true;player.jumpPhase='land';player.jumpTimer=0;
+      player.jumpY=0; player.vy=0; player.onGround=true; player.jumpPhase='land'; player.jumpTimer=0;
     }
   }else if(player.jumpPhase==='land'){
     player.jumpTimer+=dt;
     if(player.jumpTimer>=0.10)player.jumpPhase='ground';
   }
 
-  if(player.attack>0){
-    player.attack=Math.max(0,player.attack-dt);
-    player.attackTime+=dt;
-  }
+  if(player.attack>0){ player.attack=Math.max(0,player.attack-dt); player.attackTime+=dt; }
   player.dash=Math.max(0,player.dash-dt);
   player.hitCooldown=Math.max(0,player.hitCooldown-dt);
   animTime+=dt;
 
   if(giantBoar.active){
     const dx=player.x-giantBoar.x;
-    if(Math.abs(dx)>70) giantBoar.x+=Math.sign(dx)*giantBoar.speed*dt;
+    const distance=Math.abs(dx);
+    if(distance>70) giantBoar.x+=Math.sign(dx)*giantBoar.speed*dt;
     giantBoar.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),giantBoar.x));
     giantBoar.y=player.y;
     giantBoar.animTime+=dt;
     giantBoar.attackCooldown=Math.max(0,giantBoar.attackCooldown-dt);
-    if(Math.abs(dx)<105 && giantBoar.attackCooldown<=0 && player.hitCooldown<=0){
-      player.hp=Math.max(0,player.hp-1);
-      player.hitCooldown=.8;
-      giantBoar.attackCooldown=1.0;
+
+    if(distance<=105&&giantBoar.attackCooldown<=0&&player.hitCooldown<=0){
+      player.hp=Math.max(0,player.hp-2);
+      player.hitCooldown=1.0;
+      giantBoar.attackCooldown=1.4;
+      player.x+=Math.sign(player.x-giantBoar.x)*45;
+      document.getElementById('message').textContent=player.hp>0?'GIANT BOAR HIT KĀLA!':'KĀLA DEFEATED';
+      if(player.hp<=0)setTimeout(()=>{
+        player.hp=3; player.x=160; giantBoar.active=false;
+        document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE';
+      },900);
     }
   }else{
     const b=boars[currentBoar];
     if(b&&b.active){
       b.y=player.y;
-      const dx=player.x-b.x,distance=Math.abs(dx);
+      const dx=player.x-b.x, distance=Math.abs(dx);
       if(distance>48)b.x+=Math.sign(dx)*b.speed*dt;
       else if(b.attackCooldown<=0&&player.hitCooldown<=0){
         player.hp=Math.max(0,player.hp-1);
-        player.hitCooldown=.9;b.attackCooldown=1.1;
+        player.hitCooldown=.9; b.attackCooldown=1.1;
         player.x+=Math.sign(player.x-b.x)*28;
         document.getElementById('message').textContent=player.hp>0?'BOAR HIT KĀLA!':'KĀLA DEFEATED';
-        if(player.hp<=0)setTimeout(()=>{player.hp=3;player.x=160;spawnNextBoar();document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE'},900);
+        if(player.hp<=0)setTimeout(()=>{
+          player.hp=3; player.x=160; spawnNextBoar();
+          document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE';
+        },900);
       }
-      b.attackCooldown=Math.max(0,b.attackCooldown-dt);b.animTime+=dt;
+      b.attackCooldown=Math.max(0,b.attackCooldown-dt);
+      b.animTime+=dt;
     }
-  }else{
-    giantBoar.y=player.y;
-    const dx=player.x-giantBoar.x,distance=Math.abs(dx);
-    if(distance>70)giantBoar.x+=Math.sign(dx)*72*dt;
-    else if(giantBoar.attackCooldown<=0&&player.hitCooldown<=0){
-      player.hp=Math.max(0,player.hp-2);player.hitCooldown=1.0;giantBoar.attackCooldown=1.4;
-      player.x+=Math.sign(player.x-giantBoar.x)*45;
-      document.getElementById('message').textContent=player.hp>0?'GIANT BOAR HIT KĀLA!':'KĀLA DEFEATED';
-      if(player.hp<=0)setTimeout(()=>{player.hp=3;player.x=160;giantBoar.active=false;document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE'},900);
-    }
-    giantBoar.attackCooldown=Math.max(0,giantBoar.attackCooldown-dt);
-    giantBoar.animTime+=dt;
   }
+
   relics.forEach(r=>{
     if(!r.collected&&Math.abs(player.x-r.x)<45){
-      r.collected=true;relicCount++;
+      r.collected=true; relicCount++;
       document.getElementById('message').textContent=relicCount<3?'SACRED RELIC COLLECTED':'3 RELICS COLLECTED • PRESS E TO AWAKEN';
     }
   });
