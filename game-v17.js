@@ -1,5 +1,32 @@
 const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
+
+const audioFiles={
+  walk:'assets/audio/player/kala-walk.mp3'
+};
+const audio={};
+Object.entries(audioFiles).forEach(([name,src])=>{
+  const a=new Audio(src);
+  a.preload='auto';
+  a.loop=name==='walk';
+  audio[name]=a;
+});
+function playAudio(name){
+  const a=audio[name];
+  if(!a)return;
+  try{ a.currentTime=0; a.play().catch(()=>{}); }catch(e){}
+}
+function startAudio(name){
+  const a=audio[name];
+  if(!a)return;
+  try{ if(a.paused)a.play().catch(()=>{}); }catch(e){}
+}
+function stopAudio(name){
+  const a=audio[name];
+  if(!a)return;
+  try{ a.pause(); a.currentTime=0; }catch(e){}
+}
+
 const BACKGROUND_SRC='assets/backgrounds/Background.PNG';
 const backgroundImage=new Image();
 backgroundImage.decoding='async';
@@ -295,6 +322,8 @@ function hitBoar(){
 
 function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
+  const moving=dir!==0;
+  if(moving) startAudio('walk'); else stopAudio('walk');
   const speed=player.dash>0?620:player.speed;
   player.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),player.x+dir*speed*dt));
   clampCamera();
