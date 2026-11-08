@@ -4,8 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>KĀLA: The Lost Temple</title>
-<link rel="stylesheet" href="style.css">
-</head>
+<link rel="stylesheet" href="style.css?v=controls-4">
+<style id="kala-touch-controls-v4">
+html,body{width:100%;height:100%;margin:0;overflow:hidden}
+#controls{position:fixed!important;inset:0!important;z-index:9999!important;pointer-events:none!important}
+#controls button{position:absolute!important;box-sizing:border-box!important;width:76px!important;height:76px!important;margin:0!important;padding:0!important;border:2px solid rgba(235,235,235,.48)!important;border-radius:50%!important;background:transparent!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font:700 22px/1 Arial,sans-serif!important;text-shadow:0 1px 5px #000!important;box-shadow:none!important;pointer-events:auto!important;-webkit-appearance:none!important;appearance:none!important}
+#controls .controlLabel{position:absolute!important;display:block!important;color:rgba(255,255,255,.46)!important;font:700 10px/12px Arial,sans-serif!important;letter-spacing:3px!important;text-align:center!important;white-space:nowrap!important;text-shadow:0 1px 5px #000!important}
+#controls .movePad{position:absolute!important;left:18px!important;bottom:max(22px,env(safe-area-inset-bottom))!important;width:190px!important;height:205px!important;transform:none!important}
+#controls #jumpBtn{left:57px!important;top:0!important}
+#controls #leftBtn{left:0!important;top:86px!important}
+#controls #rightBtn{left:114px!important;top:86px!important}
+#controls .dpad.down{left:57px!important;top:172px!important}
+#controls .movePad>.controlCluster{position:absolute!important;left:0!important;top:0!important;width:190px!important;height:205px!important}
+#controls .movePad>.controlCluster>.controlLabel{left:57px!important;top:208px!important;width:76px!important}
+#controls .actionPad{position:absolute!important;right:18px!important;bottom:max(22px,env(safe-area-inset-bottom))!important;width:190px!important;height:205px!important;transform:none!important}
+#controls .actionCluster{position:absolute!important;width:76px!important;height:96px!important;margin:0!important;padding:0!important;pointer-events:none!important}
+#controls .actionCluster.top{left:0!important;top:0!important}
+#controls .actionCluster.attack{right:0!important;top:0!important}
+#controls .actionCluster.dash{left:0!important;bottom:0!important}
+#controls .actionCluster.use{right:0!important;bottom:0!important}
+#controls .actionCluster .actionBtn{left:0!important;top:0!important}
+#controls .actionCluster .controlLabel{left:50%!important;top:80px!important;transform:translateX(-50%)!important}
+#controls #attackBtn{width:82px!important;height:82px!important;left:-3px!important;top:-3px!important}
+#controls .attack .controlLabel{top:86px!important}
+@media(min-width:700px){
+ #controls .movePad{left:clamp(28px,7.8vw,120px)!important}
+ #controls .actionPad{right:clamp(28px,7.8vw,120px)!important}
+}
+</style></head>
 <body>
 <canvas id="game"></canvas>
 
@@ -44,6 +70,6 @@
 </div>
 
 <div id="message">KĀLA • THE LOST TEMPLE</div>
-<script src="game-v17.js?v=controls-3"></script>
+<script src="game-v17.js?v=controls-4"></script>
 </body>
 </html>
