@@ -5,7 +5,28 @@ const backgroundImage=new Image();
 backgroundImage.decoding='async';
 backgroundImage.onload=()=>{ if(gameStarted) draw(); };
 backgroundImage.onerror=()=>console.error('KĀLA background failed to load:',BACKGROUND_SRC);
-backgroundImage.src=BACKGROUND_SRC+'?v=bg3';
+backgroundImage.src=BACKGROUND_SRC+'?v=bg4';
+
+// Side-scrolling world: the background defines the playable world width.
+// The image is scaled to the viewport height, then the camera moves across
+// the full image while KĀLA remains in world coordinates.
+let cameraX=0;
+let worldWidth=0;
+const CAMERA_FOLLOW=.12;
+function updateWorldBounds(){
+  if(backgroundImage.naturalWidth&&backgroundImage.naturalHeight){
+    const scale=H/backgroundImage.naturalHeight;
+    worldWidth=Math.max(W,backgroundImage.naturalWidth*scale);
+  }else{
+    worldWidth=Math.max(W,W*2.25);
+  }
+}
+function clampCamera(){
+  const maxCamera=Math.max(0,worldWidth-W);
+  const target=Math.max(0,Math.min(maxCamera,player.x-W*.5));
+  cameraX+=(target-cameraX)*Math.min(1,CAMERA_FOLLOW*60/60);
+  cameraX=Math.max(0,Math.min(maxCamera,cameraX));
+}
 
 const IDLE_FRAMES=[
   'assets/characters/kala/idle/KALA_idle_01.png',
@@ -95,11 +116,13 @@ function resize(){
   canvas.width=Math.floor(W*dpr); canvas.height=Math.floor(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   player.y=Math.max(140,H-120)+50;
-  player.x=Math.max(40,Math.min(W-40,player.x));
-  relics[0].x=Math.max(120,W*.25);
-  relics[1].x=Math.max(240,W*.5);
-  relics[2].x=Math.max(360,W*.75);
+  updateWorldBounds();
+  player.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),player.x));
+  relics[0].x=Math.max(220,worldWidth*.30);
+  relics[1].x=Math.max(420,worldWidth*.55);
+  relics[2].x=Math.max(620,worldWidth*.82);
   boars.forEach(b=>b.y=player.y);
+  clampCamera();
   if(!boars[currentBoar].active && currentBoar<5) spawnNextBoar();
 
 }
@@ -109,8 +132,10 @@ function spawnNextBoar(){
   const b=boars[currentBoar];
   b.active=true;b.hp=b.maxHp;b.attackCooldown=0;b.animTime=0;
   b.y=player.y;
-  b.x=Math.min(W-80,Math.max(player.x+280,W-120));
-  if(b.x<player.x+180)b.x=W-80;
+  const spawnDistance=320;
+  const rightSpawn=Math.min(worldWidth-100,player.x+spawnDistance);
+  b.x=Math.max(player.x+180,rightSpawn);
+  if(b.x>worldWidth-80)b.x=worldWidth-80;
   document.getElementById('message').textContent='WILD BOAR '+(currentBoar+1)+' OF 5';
 }
 function allBoarsDefeated(){return currentBoar>=5;}
@@ -199,7 +224,7 @@ document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventD
 function tryAwaken(){
   if(canAwaken()){
     giantBoar.active=true;
-    giantBoar.x=Math.min(W-100,player.x+260);
+    giantBoar.x=Math.min(worldWidth-100,player.x+260);
     giantBoar.y=player.y;
     giantBoar.hp=giantBoar.maxHp;
     giantBoar.animTime=0;
@@ -255,7 +280,8 @@ function hitBoar(){
 function update(dt){
   const dir=(keys.right?1:0)-(keys.left?1:0);
   const speed=player.dash>0?620:player.speed;
-  player.x=Math.max(40,Math.min(W-40,player.x+dir*speed*dt));
+  player.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),player.x+dir*speed*dt));
+  clampCamera();
 
   if(player.jumpPhase==='crouch'){
     player.jumpTimer+=dt;
@@ -320,6 +346,7 @@ function update(dt){
   });
 
   hitBoar();
+  clampCamera();
 }
 
 function drawHealth(){
@@ -341,16 +368,21 @@ function drawHealth(){
 function draw(){
   ctx.clearRect(0,0,W,H);
   if(backgroundImage.complete&&backgroundImage.naturalWidth){
-    const scale=Math.max(W/backgroundImage.naturalWidth,H/backgroundImage.naturalHeight);
+    const scale=H/backgroundImage.naturalHeight;
     const bw=backgroundImage.naturalWidth*scale;
-    const bh=backgroundImage.naturalHeight*scale;
-    ctx.drawImage(backgroundImage,(W-bw)/2,(H-bh)/2,bw,bh);
+    const bh=H;
+    worldWidth=Math.max(W,bw);
+    ctx.drawImage(backgroundImage,-cameraX,0,bw,bh);
   }else{
     ctx.fillStyle='#07110b';
     ctx.fillRect(0,0,W,H);
   }
 
   relics.forEach(r=>{r.y=player.y;});
+
+  // Everything below this point is world-space. The HUD is drawn after restore().
+  ctx.save();
+  ctx.translate(-cameraX,0);
 
   ctx.strokeStyle='rgba(255,255,255,.12)';
   ctx.beginPath();
@@ -430,6 +462,7 @@ function draw(){
     }
   }
 
+  ctx.restore();
   drawHealth();
 }
 
