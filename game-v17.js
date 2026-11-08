@@ -2,24 +2,34 @@ const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
 
 const audioFiles={
-  walk:'assets/audio/player/Kala-walk.mp3'
+  walk:'assets/audio/player/Kala-walk.mp3',
+  level1:'assets/audio/music/Level 1 background music.mp3'
 };
+
 const audio={};
 let audioUnlocked=false;
 function unlockAudio(){
   if(audioUnlocked)return;
   const a=audio.walk;
+  const music=audio.level1;
   if(!a)return;
   try{
     a.volume=.55;
+    music.volume=.32;
     const p=a.play();
-    if(p&&p.then)p.then(()=>{a.pause();a.currentTime=0;audioUnlocked=true;}).catch(()=>{});
+    const m=music.play();
+    Promise.allSettled([p,m]).then(()=>{
+      try{a.pause();a.currentTime=0;}catch(e){}
+      try{music.pause();music.currentTime=0;}catch(e){}
+      audioUnlocked=true;
+      if(music.paused)music.play().catch(()=>{});
+    });
   }catch(e){}
 }
 Object.entries(audioFiles).forEach(([name,src])=>{
   const a=new Audio(src);
   a.preload='auto';
-  a.loop=name==='walk';
+  a.loop=name==='walk'||name==='level1';
   audio[name]=a;
 });
 function playAudio(name){
