@@ -66,7 +66,7 @@ let relicCount=0;
 let giantBoar={active:false,x:0,y:0,hp:15,maxHp:15,animTime:0,attackCooldown:0};
 let levelComplete=false;
 const keys={left:false,right:false};
-let W=0,H=0,dpr=1,last=performance.now(),animTime=0;
+let W=0,H=0,dpr=1,last=performance.now(),animTime=0,gameStarted=false;
 
 const idleImages=IDLE_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
@@ -377,4 +377,14 @@ function loop(now){
   const dt=Math.min((now-last)/1000,.033);
   last=now;update(dt);draw();requestAnimationFrame(loop);
 }
-resize();spawnNextBoar();requestAnimationFrame(loop);
+resize();
+spawnNextBoar();
+draw();
+
+window.startKalaGame=()=>{
+  if(gameStarted)return;
+  gameStarted=true;
+  last=performance.now();
+  document.body.classList.add('game-started');
+  requestAnimationFrame(loop);
+};
