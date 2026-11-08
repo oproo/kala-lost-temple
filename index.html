@@ -32,25 +32,9 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
  #controls .actionPad{right:clamp(28px,7.8vw,120px)!important}
 }
 </style><style id="kala-landscape-start">
-#landscapeGate{display:none;position:fixed;inset:0;z-index:100000;background:#07110b;color:#fff;align-items:center;justify-content:center;text-align:center;padding:32px;font-family:Arial,sans-serif}
-#landscapeGate .gateInner{max-width:520px}
-#landscapeGate .icon{font-size:58px;margin-bottom:18px}
-#landscapeGate h1{font-size:28px;margin:0 0 10px}
-#landscapeGate p{font-size:15px;opacity:.72;margin:0}
-#startScreen{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#07110b;color:#fff;font-family:Arial,sans-serif}
-#startScreen .startInner{text-align:center;width:min(92vw,520px)}
-#startScreen .logo{font-size:clamp(34px,8vw,64px);font-weight:800;letter-spacing:4px;text-shadow:0 3px 18px #000;margin-bottom:8px}
-#startScreen .subtitle{font-size:14px;letter-spacing:4px;opacity:.68;margin-bottom:32px}
-#playNowBtn{appearance:none;border:1px solid rgba(255,255,255,.65);background:rgba(0,0,0,.22);color:#fff;border-radius:999px;padding:16px 46px;font:700 16px Arial,sans-serif;letter-spacing:3px;box-shadow:0 4px 24px rgba(0,0,0,.35);cursor:pointer}
-#playNowBtn:active{transform:scale(.96)}
-body.game-started #startScreen{display:none}
-@media(orientation:portrait){
-  #landscapeGate{display:flex}
-  #startScreen{display:none!important}
-}
-@media(orientation:landscape){
-  #landscapeGate{display:none!important}
-}
+@media(orientation:portrait){#landscapeGate{display:flex;position:fixed;inset:0;z-index:100000;background:#07110b;color:#fff;align-items:center;justify-content:center;text-align:center;font-family:Arial,sans-serif}}
+@media(orientation:landscape){#landscapeGate{display:none!important}}
+#landscapeGate{display:none}
 </style><style id="kala-top-left-controls">
 @media(orientation:landscape){
   #controls .movePad{
@@ -63,7 +47,7 @@ body.game-started #startScreen{display:none}
 </style></head>
 <body>
 <div id="landscapeGate"><div class="gateInner"><div class="icon">↻</div><h1>LANDSCAPE MODE</h1><p>Rotate your device sideways to play KĀLA: The Lost Temple.</p></div></div>
-<div id="startScreen"><div class="startInner"><div class="logo">KĀLA</div><div class="subtitle">THE LOST TEMPLE</div><button id="playNowBtn" type="button">PLAY NOW</button></div></div><canvas id="game"></canvas>
+<canvas id="game"></canvas>
 
 <div id="controls">
   <div class="movePad">
@@ -100,6 +84,6 @@ body.game-started #startScreen{display:none}
 </div>
 
 <div id="message">KĀLA • THE LOST TEMPLE</div>
-<script src="game-v17.js?v=start-1"></script><script>document.getElementById("playNowBtn").addEventListener("click",()=>window.startKalaGame());</script>
+<script src="game-v17.js?v=start-1"></script><script>window.startKalaGame();</script>
 </body>
 </html>
