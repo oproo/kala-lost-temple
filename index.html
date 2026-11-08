@@ -11,17 +11,42 @@
 
 <div id="controls">
   <div class="movePad">
-    <button id="leftBtn" aria-label="Move left">◀</button>
-    <button id="rightBtn" aria-label="Move right">▶</button>
+    <div class="controlCluster">
+      <button id="jumpBtn" class="dpad up" aria-label="Jump">▲</button>
+      <div class="dpadRow">
+        <button id="leftBtn" class="dpad left" aria-label="Move left">◀</button>
+        <button class="dpad center" aria-label="Move">◆</button>
+        <button id="rightBtn" class="dpad right" aria-label="Move right">▶</button>
+      </div>
+      <button class="dpad down" aria-label="Crouch">▼</button>
+      <span class="controlLabel">MOVE</span>
+    </div>
   </div>
-  <div class="actionPad">\n    <button id="jumpBtn" aria-label="Jump">⬆</button>
-    <button id="attackBtn" aria-label="Attack">⚔</button>
-    <button id="dashBtn" aria-label="Dash">➜</button>
-    <button id="interactBtn" aria-label="Interact">E</button>
+
+  <div class="actionPad">
+    <div class="actionCluster top">
+      <button id="weaponBtn" class="actionBtn weapon" aria-label="Weapon">⚔</button>
+      <span class="controlLabel">WEAPON</span>
+    </div>
+
+    <div class="actionCluster attack">
+      <button id="attackBtn" class="actionBtn attackBtn" aria-label="Attack">⚔</button>
+      <span class="controlLabel">ATTACK</span>
+    </div>
+
+    <div class="actionCluster dash">
+      <button id="dashBtn" class="actionBtn" aria-label="Dash">◆</button>
+      <span class="controlLabel">DASH</span>
+    </div>
+
+    <div class="actionCluster use">
+      <button id="interactBtn" class="actionBtn" aria-label="Use">E</button>
+      <span class="controlLabel">USE</span>
+    </div>
   </div>
 </div>
 
 <div id="message">KĀLA • THE LOST TEMPLE</div>
-<script src="game-v17.js?v=jump-1"></script>
+<script src="game-v17.js?v=jump-2"></script>
 </body>
 </html>
