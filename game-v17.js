@@ -124,6 +124,53 @@ function setHeld(el,key){
 setHeld(document.getElementById('leftBtn'),'left');
 setHeld(document.getElementById('rightBtn'),'right');
 
+/* Mobile swipe movement: drag left/right anywhere on the gameplay area. */
+let swipePointerId=null, swipeStartX=0, swipeStartY=0;
+const SWIPE_DEADZONE=18;
+const SWIPE_MAX_VERTICAL=90;
+
+function clearSwipe(){
+  keys.left=false;
+  keys.right=false;
+  swipePointerId=null;
+}
+
+const gameCanvas=document.getElementById('game');
+gameCanvas.addEventListener('pointerdown',e=>{
+  if(!gameStarted)return;
+  if(e.pointerType!=='touch' && e.pointerType!=='pen')return;
+  swipePointerId=e.pointerId;
+  swipeStartX=e.clientX;
+  swipeStartY=e.clientY;
+  gameCanvas.setPointerCapture?.(e.pointerId);
+},{passive:true});
+
+gameCanvas.addEventListener('pointermove',e=>{
+  if(e.pointerId!==swipePointerId)return;
+  const dx=e.clientX-swipeStartX;
+  const dy=e.clientY-swipeStartY;
+  if(Math.abs(dx)<SWIPE_DEADZONE || Math.abs(dy)>SWIPE_MAX_VERTICAL){
+    keys.left=false;
+    keys.right=false;
+    return;
+  }
+  if(dx<0){
+    keys.left=true;
+    keys.right=false;
+    player.facing='left';
+  }else{
+    keys.right=true;
+    keys.left=false;
+    player.facing='right';
+  }
+},{passive:true});
+
+['pointerup','pointercancel','pointerleave'].forEach(type=>{
+  gameCanvas.addEventListener(type,e=>{
+    if(e.pointerId===swipePointerId)clearSwipe();
+  },{passive:true});
+});
+
 function jump(){
   if(player.onGround){
     player.jumpPhase='crouch';
