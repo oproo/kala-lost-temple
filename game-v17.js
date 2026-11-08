@@ -1,6 +1,6 @@
 const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
-const BACKGROUND_SRC='assets/backgrounds/kala_temple.jpg';
+const BACKGROUND_SRC='assets/backgrounds/Background.PNG';
 const backgroundImage=new Image();
 backgroundImage.src=BACKGROUND_SRC;
 
