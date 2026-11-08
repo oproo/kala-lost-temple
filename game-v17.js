@@ -90,7 +90,7 @@ const boars=Array.from({length:5},(_,i)=>({x:0,y:0,speed:105+i*8,animTime:0,atta
 let currentBoar=0;
 const relics=[{x:120,collected:false},{x:300,collected:false},{x:480,collected:false}];
 let relicCount=0;
-let giantBoar={active:false,x:0,y:0,hp:15,maxHp:15,animTime:0,attackCooldown:0};
+let giantBoar={active:false,x:0,y:0,hp:15,maxHp:15,animTime:0,attackCooldown:0,speed:72};
 let levelComplete=false;
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now(),animTime=0,gameStarted=false;
@@ -100,6 +100,18 @@ const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const attackImages=ATTACK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const jumpImages=JUMP_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const boarImages=BOAR_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
+const GIANT_BOAR_RUN_FRAMES=[
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_01.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_02.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_03.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_04.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_05.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_06.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_07.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_08.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_09.png',
+  'assets/enemies/giant-boar/GIANT_BOAR_RUN_10.png'
+];
 const BLUE_RELIC_FRAMES=[
   'assets/relics/blue/blue_relic_spin_01.png',
   'assets/relics/blue/blue_relic_spin_02.png',
@@ -108,7 +120,7 @@ const BLUE_RELIC_FRAMES=[
   'assets/relics/blue/blue_relic_spin_05.png'
 ];
 const blueRelicImages=BLUE_RELIC_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
-[...idleImages,...walkImages,...attackImages,...jumpImages,...boarImages,...blueRelicImages].forEach(img=>img.addEventListener('load',()=>{}));
+[...idleImages,...walkImages,...attackImages,...jumpImages,...boarImages,...giantBoarImages,...blueRelicImages].forEach(img=>img.addEventListener('load',()=>{}));
 
 function resize(){
   dpr=Math.min(window.devicePixelRatio||1,2);
@@ -312,7 +324,19 @@ function update(dt){
   player.hitCooldown=Math.max(0,player.hitCooldown-dt);
   animTime+=dt;
 
-  if(!giantBoar.active){
+  if(giantBoar.active){
+    const dx=player.x-giantBoar.x;
+    if(Math.abs(dx)>70) giantBoar.x+=Math.sign(dx)*giantBoar.speed*dt;
+    giantBoar.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),giantBoar.x));
+    giantBoar.y=player.y;
+    giantBoar.animTime+=dt;
+    giantBoar.attackCooldown=Math.max(0,giantBoar.attackCooldown-dt);
+    if(Math.abs(dx)<105 && giantBoar.attackCooldown<=0 && player.hitCooldown<=0){
+      player.hp=Math.max(0,player.hp-1);
+      player.hitCooldown=.8;
+      giantBoar.attackCooldown=1.0;
+    }
+  }else{
     const b=boars[currentBoar];
     if(b&&b.active){
       b.y=player.y;
@@ -443,6 +467,26 @@ function draw(){
       ctx.restore();
     }
   });
+
+  if(giantBoar.active){
+    const g=giantBoarImages[Math.floor(giantBoar.animTime*10)%giantBoarImages.length];
+    if(g&&g.complete&&g.naturalWidth){
+      const targetH=210,ratio=g.naturalWidth/g.naturalHeight,targetW=targetH*ratio;
+      ctx.save();
+      const groundY=giantBoar.y+32;
+      ctx.translate(giantBoar.x,groundY-targetH);
+      if(giantBoar.x>player.x)ctx.scale(-1,1);
+      ctx.drawImage(g,-targetW/2,0,targetW,targetH);
+      ctx.restore();
+
+      ctx.fillStyle='rgba(0,0,0,.7)';
+      ctx.fillRect(giantBoar.x-65,giantBoar.y-228+32,130,9);
+      ctx.fillStyle='#9d2525';
+      ctx.fillRect(giantBoar.x-65,giantBoar.y-228+32,130*(giantBoar.hp/giantBoar.maxHp),9);
+      ctx.strokeStyle='#fff';
+      ctx.strokeRect(giantBoar.x-65,giantBoar.y-228+32,130,9);
+    }
+  }
 
   const activeBoar=boars[currentBoar];
   if(activeBoar&&activeBoar.active&&!giantBoar.active){
