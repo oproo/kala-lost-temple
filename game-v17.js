@@ -5,48 +5,40 @@ const audioFiles={
   walk:'assets/audio/player/Kala-walk.mp3',
   level1:'assets/audio/music/Level 1 background music.mp3'
 };
-
 const audio={};
-let audioUnlocked=false;
-function unlockAudio(){
-  if(audioUnlocked)return;
-  const a=audio.walk;
-  const music=audio.level1;
-  if(!a)return;
-  try{
-    a.volume=.55;
-    music.volume=.32;
-    const p=a.play();
-    const m=music.play();
-    Promise.allSettled([p,m]).then(()=>{
-      try{a.pause();a.currentTime=0;}catch(e){}
-      try{music.pause();music.currentTime=0;}catch(e){}
-      audioUnlocked=true;
-      if(music.paused)music.play().catch(()=>{});
-    });
-  }catch(e){}
-}
 Object.entries(audioFiles).forEach(([name,src])=>{
   const a=new Audio(src);
   a.preload='auto';
-  a.loop=name==='walk'||name==='level1';
+  a.loop=true;
+  a.playsInline=true;
   audio[name]=a;
 });
-function playAudio(name){
-  const a=audio[name];
-  if(!a)return;
-  try{ a.currentTime=0; a.play().catch(()=>{}); }catch(e){}
+let audioUnlocked=false;
+function startLevelMusic(){
+  const music=audio.level1;
+  if(!music)return;
+  music.volume=.32;
+  if(music.paused){
+    const p=music.play();
+    if(p&&p.then)p.then(()=>{audioUnlocked=true;}).catch(e=>console.warn('Level 1 music blocked:',e));
+  }
+}
+function unlockAudio(){
+  if(audioUnlocked){startLevelMusic();return;}
+  startLevelMusic();
 }
 function startAudio(name){
   const a=audio[name];
   if(!a)return;
-  try{ if(a.paused)a.play().catch(()=>{}); }catch(e){}
+  try{if(a.paused)a.play().catch(()=>{});}catch(e){}
 }
 function stopAudio(name){
   const a=audio[name];
   if(!a)return;
-  try{ a.pause(); a.currentTime=0; }catch(e){}
+  try{a.pause();a.currentTime=0;}catch(e){}
 }
+document.addEventListener('pointerdown',unlockAudio,{capture:true,passive:true});
+document.addEventListener('touchstart',unlockAudio,{capture:true,passive:true});
 
 const BACKGROUND_SRC='assets/backgrounds/Background.PNG';
 const backgroundImage=new Image();
