@@ -2,46 +2,161 @@
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#111}
 body{font-family:Arial,sans-serif}
 #game{position:absolute;inset:0;width:100%;height:100%;display:block;background:#111;touch-action:none}
-#controls{position:absolute;inset:0;z-index:5;pointer-events:none}
-button{font:700 22px Arial;color:#fff;background:transparent!important;border:2px solid rgba(255,255,255,.48);border-radius:50%;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;pointer-events:auto;text-shadow:0 1px 4px #000;box-shadow:none}
-button:active{transform:scale(.92);background:rgba(120,90,30,.18)}
-.controlLabel{color:rgba(255,255,255,.52)!important;font-size:10px;font-weight:700;letter-spacing:3px;text-shadow:0 1px 5px #000;white-space:nowrap}
-.movePad{position:absolute;left:28px;bottom:max(20px,env(safe-area-inset-bottom));width:275px;height:275px}
-.controlCluster{position:absolute;left:0;bottom:0;width:215px;height:270px}
-.dpad{position:absolute;width:76px;height:76px}
-.dpad.up{left:90px;top:0}
-.dpadRow{position:absolute;left:0;top:0;width:215px;height:162px}
-.dpadRow .dpad{position:absolute;top:86px}
-.dpad.down{left:90px;top:172px}
-.controlCluster>.controlLabel{position:absolute;left:95px;bottom:13px}
-.actionPad{position:absolute;right:28px;bottom:max(20px,env(safe-area-inset-bottom));width:285px;height:275px;pointer-events:none}
-.actionCluster{position:absolute;width:88px;height:100px;text-align:center;pointer-events:none}
-.actionBtn{width:76px;height:76px;margin:auto;font-size:23px;pointer-events:auto}
-.actionCluster .controlLabel{display:block;margin-top:4px}
+
+#controls{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  pointer-events:none;
+  font-family:Arial,sans-serif;
+}
+
+button{
+  -webkit-appearance:none;
+  appearance:none;
+  font:700 22px/1 Arial,sans-serif;
+  color:#fff;
+  background:transparent!important;
+  border:2px solid rgba(235,235,235,.48);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  touch-action:none;
+  user-select:none;
+  -webkit-user-select:none;
+  pointer-events:auto;
+  text-shadow:0 1px 5px rgba(0,0,0,.95);
+  box-shadow:0 1px 5px rgba(0,0,0,.22);
+}
+
+button:active{
+  transform:scale(.93);
+  background:rgba(255,255,255,.08)!important;
+}
+
+.controlLabel{
+  display:block;
+  color:rgba(255,255,255,.46)!important;
+  font-size:10px;
+  line-height:12px;
+  font-weight:700;
+  letter-spacing:3px;
+  text-align:center;
+  white-space:nowrap;
+  text-shadow:0 1px 5px rgba(0,0,0,.95);
+}
+
+/* LEFT: exact diamond/D-pad arrangement */
+.movePad{
+  position:absolute;
+  left:clamp(22px,7.8vw,120px);
+  bottom:max(28px,env(safe-area-inset-bottom));
+  width:190px;
+  height:205px;
+  pointer-events:none;
+}
+
+#jumpBtn,#leftBtn,#rightBtn,#controls .dpad.down{
+  position:absolute!important;
+  width:76px!important;
+  height:76px!important;
+  margin:0!important;
+}
+
+#jumpBtn{left:57px;top:0}
+#leftBtn{left:0;top:86px}
+#rightBtn{left:114px;top:86px}
+#controls .dpad.down{left:57px;top:172px}
+
+.movePad .controlLabel{
+  position:absolute;
+  left:57px;
+  top:calc(100% + 3px);
+  width:76px;
+}
+
+/* RIGHT: 2 x 2 action arrangement */
+.actionPad{
+  position:absolute;
+  right:clamp(22px,7.8vw,120px);
+  bottom:max(28px,env(safe-area-inset-bottom));
+  width:190px;
+  height:205px;
+  pointer-events:none;
+}
+
+.actionCluster{
+  position:absolute;
+  width:76px;
+  height:91px;
+  text-align:center;
+  pointer-events:none;
+}
+
+.actionBtn{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:76px!important;
+  height:76px!important;
+  margin:0!important;
+  font-size:22px;
+}
+
+.actionCluster .controlLabel{
+  position:absolute;
+  top:80px;
+  left:50%;
+  transform:translateX(-50%);
+}
+
 .actionCluster.top{left:0;top:0}
 .actionCluster.attack{right:0;top:0}
 .actionCluster.dash{left:0;bottom:0}
 .actionCluster.use{right:0;bottom:0}
-.actionBtn.attackBtn{background:transparent;border-color:rgba(255,255,255,.48);width:82px;height:82px}
-#message{position:absolute;top:max(14px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:6;color:#fff;background:rgba(0,0,0,.55);padding:8px 14px;border-radius:10px;font-size:14px;pointer-events:none;white-space:nowrap}
+
+#attackBtn{
+  width:82px!important;
+  height:82px!important;
+  left:-3px!important;
+  top:-3px!important;
+}
+
+#attackBtn + .controlLabel{top:86px}
+
+#message{
+  position:absolute;
+  top:max(14px,env(safe-area-inset-top));
+  left:50%;
+  transform:translateX(-50%);
+  z-index:60;
+  color:#fff;
+  background:rgba(0,0,0,.55);
+  padding:8px 14px;
+  border-radius:10px;
+  font-size:14px;
+  pointer-events:none;
+  white-space:nowrap;
+}
+
 @media(max-width:700px){
-  .movePad{left:16px;bottom:max(14px,env(safe-area-inset-bottom));transform:scale(.92);transform-origin:bottom left}
-  .actionPad{right:16px;bottom:max(14px,env(safe-area-inset-bottom));transform:scale(.92);transform-origin:bottom right}
+  .movePad{
+    left:18px;
+    bottom:max(22px,env(safe-area-inset-bottom));
+    transform:scale(.9);
+    transform-origin:bottom left;
+  }
+  .actionPad{
+    right:18px;
+    bottom:max(22px,env(safe-area-inset-bottom));
+    transform:scale(.9);
+    transform-origin:bottom right;
+  }
 }
+
 @media(min-width:1000px){
-  .movePad{left:34px;bottom:28px}
-  .actionPad{right:34px;bottom:28px}
+  .movePad{left:clamp(28px,7.8vw,120px);bottom:32px}
+  .actionPad{right:clamp(28px,7.8vw,120px);bottom:32px}
 }
-/* Reference-layout positioning: explicit coordinates prevent flex/browser layout collapse. */
-#leftBtn{position:absolute!important;left:0;top:86px}
-#rightBtn{position:absolute!important;left:139px;top:86px}
-#jumpBtn{position:absolute!important;left:90px;top:0}
-#controls .dpad.down{position:absolute!important;left:90px;top:172px}
-#weaponBtn{position:absolute!important;left:0;top:0}
-#attackBtn{position:absolute!important;left:0;top:0}
-#dashBtn{position:absolute!important;left:0;top:0}
-#interactBtn{position:absolute!important;left:0;top:0}
-.actionCluster.top{left:0;top:0}
-.actionCluster.attack{right:0;top:0}
-.actionCluster.dash{left:0;bottom:0}
-.actionCluster.use{right:0;bottom:0}
