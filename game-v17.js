@@ -2,9 +2,20 @@ const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
 
 const audioFiles={
-  walk:'assets/audio/player/kala-walk.mp3'
+  walk:'assets/audio/player/Kala-walk.mp3'
 };
 const audio={};
+let audioUnlocked=false;
+function unlockAudio(){
+  if(audioUnlocked)return;
+  const a=audio.walk;
+  if(!a)return;
+  try{
+    a.volume=.55;
+    const p=a.play();
+    if(p&&p.then)p.then(()=>{a.pause();a.currentTime=0;audioUnlocked=true;}).catch(()=>{});
+  }catch(e){}
+}
 Object.entries(audioFiles).forEach(([name,src])=>{
   const a=new Audio(src);
   a.preload='auto';
