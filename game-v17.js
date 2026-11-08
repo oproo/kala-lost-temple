@@ -17,7 +17,7 @@ let audioUnlocked=false;
 function startLevelMusic(){
   const music=audio.level1;
   if(!music)return;
-  music.volume=.18;
+  music.volume=.09;
   if(music.paused){
     const p=music.play();
     if(p&&p.then)p.then(()=>{audioUnlocked=true;}).catch(e=>console.warn('Level 1 music blocked:',e));
