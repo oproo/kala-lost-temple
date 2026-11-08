@@ -90,7 +90,7 @@ const boars=Array.from({length:5},(_,i)=>({x:0,y:0,speed:105+i*8,animTime:0,atta
 let currentBoar=0;
 const relics=[{x:120,collected:false},{x:300,collected:false},{x:480,collected:false}];
 let relicCount=0;
-let giantBoar={active:false,x:0,y:0,hp:15,maxHp:15,animTime:0,attackCooldown:0,speed:72};
+let giantBoar={active:false,x:0,y:0,hp:15,maxHp:15,animTime:0,attackCooldown:0,speed:72,facing:'left'};
 let levelComplete=false;
 const keys={left:false,right:false};
 let W=0,H=0,dpr=1,last=performance.now(),animTime=0,gameStarted=false;
@@ -136,7 +136,7 @@ function resize(){
   relics[2].x=Math.max(620,worldWidth*.82);
   boars.forEach(b=>b.y=player.y);
   clampCamera();
-  if(!boars[currentBoar].active && currentBoar<5) spawnNextBoar();
+  if(currentBoar===0 && !boars[currentBoar].active) spawnNextBoar();
 
 }
 
@@ -243,6 +243,7 @@ function tryAwaken(){
     giantBoar.y=player.y;
     giantBoar.hp=giantBoar.maxHp;
     giantBoar.animTime=0;
+    giantBoar.facing=giantBoar.x>player.x?'left':'right';
     document.getElementById('message').textContent='THE GIANT BOAR AWAKENS!';
   }
 }
@@ -319,25 +320,25 @@ function update(dt){
   animTime+=dt;
 
   if(giantBoar.active){
+    // Use the same chase/turn mechanics as the regular wild boars.
     const dx=player.x-giantBoar.x;
     const distance=Math.abs(dx);
-    if(distance>70) giantBoar.x+=Math.sign(dx)*giantBoar.speed*dt;
+
+    if(distance>48){
+      giantBoar.x+=Math.sign(dx)*giantBoar.speed*dt;
+      giantBoar.facing=dx<0?'left':'right';
+    }else if(giantBoar.attackCooldown<=0&&player.hitCooldown<=0){
+      player.hp=Math.max(0,player.hp-2);
+      player.hitCooldown=.9;
+      giantBoar.attackCooldown=1.1;
+      player.x+=Math.sign(player.x-giantBoar.x)*28;
+      document.getElementById('message').textContent=player.hp>0?'GIANT BOAR HIT KĀLA!':'KĀLA DEFEATED';
+    }
+
     giantBoar.x=Math.max(40,Math.min(Math.max(40,worldWidth-40),giantBoar.x));
     giantBoar.y=player.y;
     giantBoar.animTime+=dt;
     giantBoar.attackCooldown=Math.max(0,giantBoar.attackCooldown-dt);
-
-    if(distance<=105&&giantBoar.attackCooldown<=0&&player.hitCooldown<=0){
-      player.hp=Math.max(0,player.hp-2);
-      player.hitCooldown=1.0;
-      giantBoar.attackCooldown=1.4;
-      player.x+=Math.sign(player.x-giantBoar.x)*45;
-      document.getElementById('message').textContent=player.hp>0?'GIANT BOAR HIT KĀLA!':'KĀLA DEFEATED';
-      if(player.hp<=0)setTimeout(()=>{
-        player.hp=3; player.x=160; giantBoar.active=false;
-        document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE';
-      },900);
-    }
   }else{
     const b=boars[currentBoar];
     if(b&&b.active){
@@ -350,7 +351,7 @@ function update(dt){
         player.x+=Math.sign(player.x-b.x)*28;
         document.getElementById('message').textContent=player.hp>0?'BOAR HIT KĀLA!':'KĀLA DEFEATED';
         if(player.hp<=0)setTimeout(()=>{
-          player.hp=3; player.x=160; spawnNextBoar();
+          player.hp=3; player.x=160;
           document.getElementById('message').textContent='KĀLA • THE LOST TEMPLE';
         },900);
       }
@@ -470,7 +471,7 @@ function draw(){
       ctx.save();
       const groundY=giantBoar.y+32;
       ctx.translate(giantBoar.x,groundY-targetH);
-      if(giantBoar.x>player.x)ctx.scale(-1,1);
+      if(giantBoar.facing==='left')ctx.scale(-1,1);
       ctx.drawImage(g,-targetW/2,0,targetW,targetH);
       ctx.restore();
 
