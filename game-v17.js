@@ -1,5 +1,8 @@
 const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
+const BACKGROUND_SRC='assets/backgrounds/kala_temple.jpg';
+const backgroundImage=new Image();
+backgroundImage.src=BACKGROUND_SRC;
 
 const IDLE_FRAMES=[
   'assets/characters/kala/idle/KALA_idle_01.png',
@@ -334,8 +337,15 @@ function drawHealth(){
 
 function draw(){
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#07110b';
-  ctx.fillRect(0,0,W,H);
+  if(backgroundImage.complete&&backgroundImage.naturalWidth){
+    const scale=Math.max(W/backgroundImage.naturalWidth,H/backgroundImage.naturalHeight);
+    const bw=backgroundImage.naturalWidth*scale;
+    const bh=backgroundImage.naturalHeight*scale;
+    ctx.drawImage(backgroundImage,(W-bw)/2,(H-bh)/2,bw,bh);
+  }else{
+    ctx.fillStyle='#07110b';
+    ctx.fillRect(0,0,W,H);
+  }
 
   relics.forEach(r=>{r.y=player.y;});
 
