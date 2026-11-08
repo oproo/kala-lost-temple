@@ -2,7 +2,10 @@ const canvas=document.getElementById('game');
 const ctx=canvas.getContext('2d');
 const BACKGROUND_SRC='assets/backgrounds/Background.PNG';
 const backgroundImage=new Image();
-backgroundImage.src=BACKGROUND_SRC;
+backgroundImage.decoding='async';
+backgroundImage.onload=()=>{ if(gameStarted) draw(); };
+backgroundImage.onerror=()=>console.error('KĀLA background failed to load:',BACKGROUND_SRC);
+backgroundImage.src=BACKGROUND_SRC+'?v=bg3';
 
 const IDLE_FRAMES=[
   'assets/characters/kala/idle/KALA_idle_01.png',
