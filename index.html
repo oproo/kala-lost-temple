@@ -32,9 +32,34 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
  #controls .actionPad{right:clamp(28px,7.8vw,120px)!important}
 }
 </style><style id="kala-landscape-start">
-@media(orientation:portrait){#landscapeGate{display:flex;position:fixed;inset:0;z-index:100000;background:#07110b;color:#fff;align-items:center;justify-content:center;text-align:center;font-family:Arial,sans-serif}}
-@media(orientation:landscape){#landscapeGate{display:none!important}}
 #landscapeGate{display:none}
+@media(orientation:portrait){
+  #landscapeGate{
+    display:flex!important;
+    position:fixed!important;
+    inset:0!important;
+    z-index:100000!important;
+    width:100vw!important;
+    height:100dvh!important;
+    background:#07110b!important;
+    color:#fff!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    font-family:Arial,sans-serif!important;
+  }
+  #game,#controls,#message{display:none!important}
+  body{background:#07110b!important;overflow:hidden!important}
+}
+@media(orientation:landscape){
+  #landscapeGate{display:none!important}
+  #game{display:block!important}
+  #controls{display:block!important}
+}
+#landscapeGate .gateInner{padding:24px;max-width:520px}
+#landscapeGate .icon{font-size:54px;line-height:1;margin-bottom:18px}
+#landscapeGate h1{font-size:26px;margin:0 0 10px;letter-spacing:2px}
+#landscapeGate p{font-size:14px;line-height:1.6;margin:0;opacity:.75}
 </style><style id="kala-top-left-controls">
 @media(orientation:landscape){
   #controls .movePad{
@@ -84,6 +109,6 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
 </div>
 
 <div id="message">KĀLA • THE LOST TEMPLE</div>
-<script src="game-v17.js?v=bg4"></script><script>window.startKalaGame();</script>
+<script src="game-v17.js?v=landscape1"></script><script>window.startKalaGame();</script>
 </body>
 </html>
