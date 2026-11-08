@@ -100,7 +100,6 @@ const walkImages=WALK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const attackImages=ATTACK_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const jumpImages=JUMP_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const boarImages=BOAR_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
-const giantBoarImages=GIANT_BOAR_RUN_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const GIANT_BOAR_RUN_FRAMES=[
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_01.png',
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_02.png',
@@ -113,6 +112,7 @@ const GIANT_BOAR_RUN_FRAMES=[
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_09.png',
   'assets/enemies/giant-boar/GIANT_BOAR_RUN_10.png'
 ];
+const giantBoarImages=GIANT_BOAR_RUN_FRAMES.map(src=>{const i=new Image();i.src=src;return i});
 const BLUE_RELIC_FRAMES=[
   'assets/relics/blue/blue_relic_spin_01.png',
   'assets/relics/blue/blue_relic_spin_02.png',
