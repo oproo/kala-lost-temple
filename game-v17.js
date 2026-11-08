@@ -132,10 +132,11 @@ function spawnNextBoar(){
   const b=boars[currentBoar];
   b.active=true;b.hp=b.maxHp;b.attackCooldown=0;b.animTime=0;
   b.y=player.y;
-  const spawnDistance=320;
-  const rightSpawn=Math.min(worldWidth-100,player.x+spawnDistance);
-  b.x=Math.max(player.x+180,rightSpawn);
-  if(b.x>worldWidth-80)b.x=worldWidth-80;
+  // All wild boars emerge from the boar temple at the far-right end
+  // of the map. The temple mouth is positioned around 88% of the world width
+  // in the supplied background.
+  const templeMouthX=Math.max(player.x+180,worldWidth*.88);
+  b.x=Math.min(worldWidth-55,templeMouthX);
   document.getElementById('message').textContent='WILD BOAR '+(currentBoar+1)+' OF 5';
 }
 function allBoarsDefeated(){return currentBoar>=5;}
@@ -224,7 +225,8 @@ document.getElementById('dashBtn').addEventListener('pointerdown',e=>{e.preventD
 function tryAwaken(){
   if(canAwaken()){
     giantBoar.active=true;
-    giantBoar.x=Math.min(worldWidth-100,player.x+260);
+    // The giant boar also awakens from the same temple mouth.
+    giantBoar.x=Math.min(worldWidth-55,worldWidth*.88);
     giantBoar.y=player.y;
     giantBoar.hp=giantBoar.maxHp;
     giantBoar.animTime=0;
