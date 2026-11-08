@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>KĀLA: The Lost Temple</title>
 <link rel="stylesheet" href="style.css?v=controls-4">
-<style id="kala-touch-controls-v4">
+<style id="kala-touch-controls-v5">
+html,body,#game,#controls,button{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+
 html,body{width:100%;height:100%;margin:0;overflow:hidden}
 #controls{position:fixed!important;inset:0!important;z-index:9999!important;pointer-events:none!important}
 #controls button{position:absolute!important;box-sizing:border-box!important;width:76px!important;height:76px!important;margin:0!important;padding:0!important;border:2px solid rgba(235,235,235,.48)!important;border-radius:50%!important;background:transparent!important;color:#fff!important;display:flex!important;align-items:center!important;justify-content:center!important;font:700 22px/1 Arial,sans-serif!important;text-shadow:0 1px 5px #000!important;box-shadow:none!important;pointer-events:auto!important;-webkit-appearance:none!important;appearance:none!important}
@@ -109,6 +111,9 @@ html,body{width:100%;height:100%;margin:0;overflow:hidden}
 </div>
 
 <div id="message">KĀLA • THE LOST TEMPLE</div>
-<script src="game-v17.js?v=level1-music4"></script><script>window.startKalaGame();</script>
+<script src="game-v17.js?v=level1-music5"></script><script>
+document.addEventListener("dblclick",function(e){e.preventDefault();},{passive:false});
+window.startKalaGame();
+</script>
 </body>
 </html>
