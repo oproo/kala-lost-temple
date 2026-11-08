@@ -51,6 +51,15 @@ body.game-started #startScreen{display:none}
 @media(orientation:landscape){
   #landscapeGate{display:none!important}
 }
+</style><style id="kala-top-left-controls">
+@media(orientation:landscape){
+  #controls .movePad{
+    left:24px!important;
+    top:max(24px,env(safe-area-inset-top))!important;
+    bottom:auto!important;
+    transform:none!important;
+  }
+}
 </style></head>
 <body>
 <div id="landscapeGate"><div class="gateInner"><div class="icon">↻</div><h1>LANDSCAPE MODE</h1><p>Rotate your device sideways to play KĀLA: The Lost Temple.</p></div></div>
